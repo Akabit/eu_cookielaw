@@ -30,7 +30,7 @@ function eu_cookielaw_form_eu_cookie_compliance_admin_form_alter(&$form, &$form_
     '#title' => TableSort('EU Cookie Law - Add domains to be blocked'),
   );
 
-  $domains_default_value_set = '.twitter.com;.facebook.com;.google.com;.doubleclick.net;.googlesyndication.com';
+  $domains_default_value_set = '.twitter.com;.facebook.com;.google.com;.doubleclick.net;.googlesyndication.com;.linkedin.com';
   $domains_default_value = variable_get('eu_cookielaw_domains', $domains_default_value_set);
 
   $form['eu_cookielaw']['eu_cookielaw_domains'] = array(
@@ -213,7 +213,7 @@ function eu_cookielaw_callback($buffer){
 }
 
 function eu_cookielaw_boot () {
-  if(!isset($_COOKIE['cookie-agreed']) && $_COOKIE['cookie-agreed'] === 2) {
+  if((!isset($_COOKIE['cookie-agreed']) || check_plain($_COOKIE['cookie-agreed']) !== 2) && arg(0) !== 'admin') {
     # Prevent Drupal from serving a cached page thanks to help from the Dynamic Cache module
     $GLOBALS['conf']['cache'] = false;
     # Prevent Drupal from generating a cached page (standard Drupal function)

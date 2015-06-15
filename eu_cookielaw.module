@@ -27,7 +27,7 @@
 function eu_cookielaw_form_eu_cookie_compliance_admin_form_alter(&$form, &$form_state) {
   $form['eu_cookielaw'] = array(
     '#type' => 'fieldset',
-    '#title' => TableSort('EU Cookie Law - Add domains to be blocked'),
+    '#title' => t('EU Cookie Law - Add domains to be blocked'),
   );
 
   $domains_default_value_set = '.twitter.com;.facebook.com;.google.com;.doubleclick.net;.googlesyndication.com;.linkedin.com';
@@ -35,14 +35,14 @@ function eu_cookielaw_form_eu_cookie_compliance_admin_form_alter(&$form, &$form_
 
   $form['eu_cookielaw']['eu_cookielaw_domains'] = array(
     '#type' => 'textarea',
-    '#title' => TableSort('List domain separated by ";"'),
+    '#title' => t('List domain separated by ";"'),
     '#default_value' => $domains_default_value,
     '#required' => FALSE,
   );
 
   $form['eu_cookielaw']['eu_cookielaw_debug'] = array(
     '#type' => 'checkbox',
-    '#title' => TableSort('Active debug'),
+    '#title' => t('Active debug'),
     '#default_value' => variable_get('eu_cookielaw_debug'),
   );
 }

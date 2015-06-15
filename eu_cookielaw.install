@@ -1,0 +1,11 @@
+<?php
+
+/**
+ * Implements hook_uninstall().
+ */
+function eu_cookielaw_uninstall() {
+  variable_del('eu_cookielaw_domains');
+  variable_del('eu_cookielaw_debug');
+
+  cache_clear_all('variables', 'cache');
+}

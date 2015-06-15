@@ -1,0 +1,12 @@
+name = EU Cookie Law
+description = This module extend EU Cookie Compliance module with the Diego La Monica work. https://github.com/diegolamonica/EUCookieLaw
+core = 7.x
+dependencies[] = eu_cookie_compliance
+dependencies[] = dynamic_cache
+
+; Information added by Drupal.org packaging script on 2014-05-20
+version = "7.x-1"
+core = "7.x"
+project = "eu_cookie_compliance"
+
+

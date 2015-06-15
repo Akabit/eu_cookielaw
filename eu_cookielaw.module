@@ -27,7 +27,7 @@
 function eu_cookielaw_form_eu_cookie_compliance_admin_form_alter(&$form, &$form_state) {
   $form['eu_cookielaw'] = array(
     '#type' => 'fieldset',
-    '#title' => t('EU Cookie Law - Block domain cookies'),
+    '#title' => TableSort('EU Cookie Law - Add domains to be blocked'),
   );
 
   $domains_default_value_set = '.twitter.com;.facebook.com;.google.com;.doubleclick.net;.googlesyndication.com';
@@ -35,14 +35,14 @@ function eu_cookielaw_form_eu_cookie_compliance_admin_form_alter(&$form, &$form_
 
   $form['eu_cookielaw']['eu_cookielaw_domains'] = array(
     '#type' => 'textarea',
-    '#title' => t('List domain separated by ";"'),
+    '#title' => TableSort('List domain separated by ";"'),
     '#default_value' => $domains_default_value,
     '#required' => FALSE,
   );
 
   $form['eu_cookielaw']['eu_cookielaw_debug'] = array(
     '#type' => 'checkbox',
-    '#title' => t('Active debug'),
+    '#title' => TableSort('Active debug'),
     '#default_value' => variable_get('eu_cookielaw_debug'),
   );
 }
@@ -83,12 +83,11 @@ function eu_cookielaw_callback($buffer){
 		'FAST',
 		'Baidu',
 	);
-	$isSearchEngine = false;
+	$isSearchEngine = FALSE;
 	foreach ($searchengines as $searchengine){
 		if (!empty($_SERVER['HTTP_USER_AGENT']) and
-		    false !== strpos(strtolower($_SERVER['HTTP_USER_AGENT']), strtolower($searchengine)))
-		{
-			$isSearchEngine = true;
+		    false !== strpos(strtolower($_SERVER['HTTP_USER_AGENT']), strtolower($searchengine))) {
+			$isSearchEngine = TRUE;
 			break;
 		}
 	}
@@ -105,13 +104,12 @@ function eu_cookielaw_callback($buffer){
 
     if ( preg_match( '#<script\W[^>]*(data-eucookielaw="block")[^>]*>.*?</script>#ms', $buffer, $items ) ) {
       $buffer = str_replace( $items[0], '', $buffer );
-
     }
 
     !defined('EUCOOKIELAW_DISALLOWED_DOMAINS')  && define('EUCOOKIELAW_DISALLOWED_DOMAINS', check_plain(variable_get('eu_cookielaw_domains')));
     !defined('EUCOOKIELAW_LOOK_IN_SCRIPTS')     && define('EUCOOKIELAW_LOOK_IN_SCRIPTS', false);
-    !defined('EUCOOKIELAW_DEBUG')               && define('EUCOOKIELAW_DEBUG', variable_get('eu_cookielaw_debug'));
-    if(EUCOOKIELAW_DISALLOWED_DOMAINS!='') {
+    !defined('EUCOOKIELAW_DEBUG')               && define('EUCOOKIELAW_DEBUG', check_plain(variable_get('eu_cookielaw_debug')));
+    if(EUCOOKIELAW_DISALLOWED_DOMAINS !== '') {
 
       ! defined( 'EUCOOKIELAW_LOOK_IN_TAGS' ) && define( 'EUCOOKIELAW_LOOK_IN_TAGS', 'iframe|script|link' );
 
@@ -119,8 +117,10 @@ function eu_cookielaw_callback($buffer){
 
       $tags = explode("|", EUCOOKIELAW_LOOK_IN_TAGS);
       $expectedAttributes = array();
-      foreach($tags as $tag){
-        if(!isset($specialAttriutes[$tag]) ) $expectedAttributes[] = $specialAttriutes['*'];
+      foreach($tags as $tag) {
+        if (!isset($specialAttriutes[$tag])) {
+          $expectedAttributes[] = $specialAttriutes['*'];
+        }
       }
       $expectedAttributes = implode('|', array_unique($expectedAttributes) );
 
@@ -130,12 +130,15 @@ function eu_cookielaw_callback($buffer){
 
           // Non empty tags (eg. <iframe>...</iframe>)
 
-          if($disallowedDomain[0] == '.'){
+          if($disallowedDomain[0] == '.') {
             $domainToScan = '([a-z0-9\-_]{1,63}\.)*' . preg_quote( substr($disallowedDomain, 1), "#" );
-          }else{
+          }
+          else {
             $domainToScan = preg_quote( $disallowedDomain, "#" );
           }
-          if(EUCOOKIELAW_DEBUG) $buffer = '<!-- rule: ' . $domainToScan . ' -->'."\n". $buffer;
+          if (EUCOOKIELAW_DEBUG) {
+            $buffer = '<!-- rule: ' . $domainToScan . ' -->' . "\n" . $buffer;
+          }
           $multiLineTagRegExp = '#<(' . EUCOOKIELAW_LOOK_IN_TAGS . ')\W[^>]*(href|src)=("|\')((http(s)?:)?//' . $domainToScan . '.*?)(\\3)[^>]*>.*?</\\1>#ms';
 
 
@@ -170,7 +173,7 @@ function eu_cookielaw_callback($buffer){
             // $buffer = str_replace( $items[0], (EUCOOKIELAW_DEBUG?('<!-- (rule: ' . $disallowedDomain . ' - removed ' . $items[4] . ' -->'):''), $buffer );
           }
 
-          if(EUCOOKIELAW_LOOK_IN_SCRIPTS){
+          if(EUCOOKIELAW_LOOK_IN_SCRIPTS) {
 
             $pattern = "#<script([^>]*)>(.*?)</script>#ims";
             if(preg_match_all($pattern, $buffer, $matches)){
